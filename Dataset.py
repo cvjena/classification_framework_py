@@ -1,10 +1,11 @@
-from numpy import *
 import csv
+from numpy import *
 import re
 import os
-import logging
+
 
 __author__ = 'simon'
+
 
 class Dataset(object):
     def __init__(self):
@@ -18,10 +19,10 @@ class Dataset(object):
             raise Exception("Invalid target field.")
 
         with open(filepath, 'r') as f:
-            reader = csv.reader(f,delimiter=delimiter)
+            reader = csv.reader(f, delimiter=delimiter)
             items = list(reader)
             items = [it[column] for it in items]
-            if target_field=="imagepaths":
+            if target_field == "imagepaths":
                 items = [prepend_string + row for row in items]
             elif datatype == "int":
                 items = [int32(it) for it in items]
@@ -36,12 +37,11 @@ class Dataset(object):
         for root, subFolders, files in os.walk(folderpath):
             for file in files:
                 if re.match(filenamepattern, file):
-                    self.imagepaths.append(root+ "/" + file)
-                    logging.info("Added file "+file)
+                    self.imagepaths.append(root + "/" + file)
 
     # extract class name from directory in which the file is in
     def create_labels_from_path(self):
-        if len(self.imagepaths)<1:
+        if len(self.imagepaths) < 1:
             raise Exception("You need to set the imagepaths before creating the labels")
 
         self.labels = []
@@ -51,7 +51,7 @@ class Dataset(object):
                 if class_search.group(2) not in self.classnames_to_labels:
                     self.classnames_to_labels[class_search.group(2)] = len(self.classnames_to_labels)
                 self.labels.append(self.classnames_to_labels[class_search.group(2)])
-                logging.info("Assigned "+path+" the label "+str(self.labels[-1]))
 
     def fill_split_assignments(self, value):
-        self.split_assignments.extend([value for _ in range(max(0,len(self.imagepaths)-len(self.split_assignments)))])
+        self.split_assignments.extend(
+            [value for _ in range(max(0, len(self.imagepaths) - len(self.split_assignments)))])
