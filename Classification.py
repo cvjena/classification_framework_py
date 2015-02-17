@@ -1,5 +1,8 @@
 __author__ = 'simon'
 
-class Classifcation:
+class Classification(object):
+    def __init__(self):
+        pass
+
     def main(self):
         pass
