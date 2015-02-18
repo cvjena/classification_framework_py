@@ -1,7 +1,11 @@
 import csv
+import logging
+
 from numpy import *
 import re
 import os
+
+from Blob import Blob
 
 
 __author__ = 'simon'
@@ -16,7 +20,7 @@ class Dataset(object):
 
     def read_from_file(self, filepath, target_field, datatype, column=0, delimiter=" ", skip_rows=0, prepend_string=""):
         if target_field not in self.__dict__:
-            raise Exception("Invalid target field.")
+            logging.exception("Invalid target field.")
 
         with open(filepath, 'r') as f:
             reader = csv.reader(f, delimiter=delimiter)
@@ -42,7 +46,7 @@ class Dataset(object):
     # extract class name from directory in which the file is in
     def create_labels_from_path(self):
         if len(self.imagepaths) < 1:
-            raise Exception("You need to set the imagepaths before creating the labels")
+            logging.exception("You need to set the imagepaths before creating the labels")
 
         self.labels = []
         for path in self.imagepaths:
@@ -55,3 +59,14 @@ class Dataset(object):
     def fill_split_assignments(self, value):
         self.split_assignments.extend(
             [value for _ in range(max(0, len(self.imagepaths) - len(self.split_assignments)))])
+
+
+    def blob_generator(self):
+        if len(self.imagepaths) != len(self.labels) or len(self.labels) != len(self.split_assignments):
+            logging.exception("Size of imagepaths, labels and split assignments are not equal!")
+        for path, label, split_assignment in zip(self.imagepaths, self.labels, self.split_assignments):
+            b = Blob()
+            b.meta.label = label
+            b.meta.imagepath = path
+            b.meta.split_assignment = split_assignment
+            yield b

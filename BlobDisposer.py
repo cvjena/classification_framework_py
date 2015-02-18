@@ -1,20 +1,16 @@
-
-from IAlgorithm import IAlgorithm
+import IAlgorithm
 from Blob import Blob
-from numpy import array, ones
+from numpy import array
 
 __author__ = 'simon'
 
 
-class SampleAlgorithm(IAlgorithm):
+class SampleAlgorithm(IAlgorithm.IAlgorithm):
     def __init__(self):
         pass
 
     def _compute(self, blob: Blob):
-        b = Blob()
-        b.data = ones(1)
-        b.meta = blob.meta
-        return b
+        return blob
 
     # Optional, only makes sense if you want to program a (faster) batch processing variant
     def _compute_all(self, blob_generator):

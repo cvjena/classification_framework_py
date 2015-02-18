@@ -1,29 +1,36 @@
+from numpy import array
+from Blob import Blob
+
 from ImageReader import ImageReader
 import IAlgorithm
-from numpy import array
+
+
 __author__ = 'simon'
 
 
 class Classification(object):
-    def __init__(self, dataset):
-        self.dataset = dataset
+    def __init__(self):
         self.algorithms = [ImageReader()]
 
-    def train(self):
-        in_generator = iter(self.dataset.imagepaths)
+    def train(self, dataset):
+        in_generator = dataset.blob_generator()
         out_generator = None
         for algo in self.algorithms:
-            label_generator = iter(self.dataset.labels)
-            out_generator = algo.train(in_generator,label_generator)
+            out_generator = algo.train(in_generator)
             in_generator = out_generator
+        # Consume all blobs from the last generator to start the actual calculations
+        for b in out_generator:
+            pass
 
-    def add_algorithm(self, algorithm : IAlgorithm):
+    def add_algorithm(self, algorithm):
         self.algorithms.append(algorithm)
 
-    def predict(self,imagepath):
-        in_array = imagepath
-        out_array = array([])
+    def predict(self, imagepath):
+        b = Blob()
+        b.meta.imagepath = imagepath
+        in_blob = b
+        out_blob = array([])
         for algo in self.algorithms:
-            out_array = algo.compute(in_array)
-            in_array = out_array
-        return out_array
+            out_blob = algo.compute(in_blob)
+            in_blob = out_blob
+        return out_blob
