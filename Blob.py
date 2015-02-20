@@ -1,4 +1,5 @@
 from numpy import array
+import uuid
 
 __author__ = 'simon'
 
@@ -8,6 +9,7 @@ class BlobMeta(object):
         self.imagepath = ""
         self.label = array([])
         self.split_assignment = -1
+        self.uuid = uuid.uuid4()
 
 
 class Blob(object):

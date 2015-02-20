@@ -1,4 +1,5 @@
 from numpy import array
+from AlgorithmPipeline import AlgorithmPipeline
 from Blob import Blob
 
 from ImageReader import ImageReader
@@ -10,27 +11,20 @@ __author__ = 'simon'
 
 class Classification(object):
     def __init__(self):
-        self.algorithms = [ImageReader()]
+        self.pipline = AlgorithmPipeline()
+        self.pipline.add_algorithm(ImageReader())
 
     def train(self, dataset):
-        in_generator = dataset.blob_generator()
-        out_generator = None
-        for algo in self.algorithms:
-            out_generator = algo.train(in_generator)
-            in_generator = out_generator
+        out_generator = self.pipline.train(dataset.blob_generator())
         # Consume all blobs from the last generator to start the actual calculations
         for b in out_generator:
             pass
 
     def add_algorithm(self, algorithm):
-        self.algorithms.append(algorithm)
+        self.pipline.add_algorithm(algorithm)
 
     def predict(self, imagepath):
         b = Blob()
         b.meta.imagepath = imagepath
-        in_blob = b
-        out_blob = array([])
-        for algo in self.algorithms:
-            out_blob = algo.compute(in_blob)
-            in_blob = out_blob
-        return out_blob
+        # Use compute all here to incorporate custom compute all functions
+        return next(self.pipline.compute([b]))

@@ -16,27 +16,29 @@ class MulticlassSVM(IAlgorithm.IAlgorithm):
                                    fit_intercept=fit_intercept, intercept_scaling=intercept_scaling,
                                    class_weight=class_weight, verbose=verbose, random_state=random_state)
 
-    def _compute(self, blob : Blob):
-        flat_data=blob.data.flatten()
-        # Add 1 as feature for bias in SVM
-        d = ones((1,flat_data.shape[0]+1))
-        d[:,:-1] = flat_data
-        return self.svm_model.predict(self._add_bias(blob.data.flatten()))
+    def _compute(self, blob_generator):
+        for blob in blob_generator:
+            flat_data=blob.data.ravel()
+            # Add 1 as feature for bias in SVM
+            d = ones((1,flat_data.shape[0]+1))
+            d[:,:-1] = flat_data
+            blob.data = self.svm_model.predict(self._add_bias(blob.data.ravel()))
+            yield blob
 
     def _train(self, blob_generator):
-        logging.info("In SVM training")
         # First, collect all elements of the input
         data = []
         labels = []
         metas = []
         for blob in blob_generator:
-            data.append(self._add_bias(blob.data.flatten()))
+            data.append(self._add_bias(blob.data.ravel()))
             labels.append(blob.meta.label)
             metas.append(blob.meta)
         try:
             data = vstack(data)
         except ValueError:
-            logging.exception("Size of all input data needs to be the same for SVM training.")
+            logging.error("Size of all input data needs to be the same for SVM training.")
+            raise Exception
 
         self.svm_model.fit(data, labels)
 

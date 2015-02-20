@@ -1,7 +1,7 @@
 
 from IAlgorithm import IAlgorithm
 from Blob import Blob
-from numpy import array, ones
+from numpy import vstack
 
 __author__ = 'simon'
 
@@ -10,19 +10,13 @@ class SampleAlgorithm(IAlgorithm):
     def __init__(self):
         pass
 
-    def _compute(self, blob: Blob):
-        b = Blob()
-        b.data = ones(1)
-        b.meta = blob.meta
-        return b
-
-    # Optional, only makes sense if you want to program a (faster) batch processing variant
-    def _compute_all(self, blob_generator):
-        # Recommended design pattern:
-        # Use yield!
-        # for in_array in in_array_generator:
-        # yield self.compute(in_array)
-        return IAlgorithm._compute_all(self, blob_generator)
+    def _compute(self, blob_generator):
+        # Design pattern:
+        for blob in blob_generator:
+            # Process the blob.data here
+            # you can yield as many blobs as you want, just make sure to copy the meta from the input blob to the
+            # yielded blobs
+            yield blob
 
     # Optional, only required if your algorithm needs training, otherwise remove this function
     def _train(self, blob_generator):
@@ -33,12 +27,12 @@ class SampleAlgorithm(IAlgorithm):
         labels = []
         metas = []
         for blob in blob_generator:
-            data.append(blob.data.flatten())
+            data.append(blob.data.ravel())
             labels.append(blob.meta.label)
             metas.append(blob.meta)
-        numpy_data = array(data)
+        numpy_data = vstack(data)
 
-        # process data
+        # process numpy_data
         # ...
 
         # Create generator for next layer

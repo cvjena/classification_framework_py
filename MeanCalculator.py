@@ -13,9 +13,7 @@ class MeanCalculator(IAlgorithm.IAlgorithm):
     def __init__(self):
         self.min=Infinity
 
-    def _compute(self, blob):
-        logging.info("Calculating mean of image "+blob.meta.imagepath)
-        b = Blob()
-        b.data = array([mean(blob.data)])
-        b.meta = blob.meta
-        return b
+    def _compute(self, blob_generator):
+        for blob in blob_generator:
+            blob.data = array([mean(blob.data)])
+            yield blob

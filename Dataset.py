@@ -20,7 +20,8 @@ class Dataset(object):
 
     def read_from_file(self, filepath, target_field, datatype, column=0, delimiter=" ", skip_rows=0, prepend_string=""):
         if target_field not in self.__dict__:
-            logging.exception("Invalid target field.")
+            logging.error("Invalid target field.")
+            raise Exception
 
         with open(filepath, 'r') as f:
             reader = csv.reader(f, delimiter=delimiter)
@@ -33,11 +34,12 @@ class Dataset(object):
             elif datatype == "float":
                 items = [float(it) for it in items]
             else:
-                raise Exception("Unsupported datatype")
+                logging.error("Unsupported datatype.")
+                raise Exception
             items = items[skip_rows:]
             self.__dict__[target_field].extend(items)
 
-    def use_images_in_folder(self, folderpath, filenamepattern=".*\.jpg"):
+    def use_images_in_folder(self, folderpath, filenamepattern=".*\.(jpg|JPEG|jpeg)"):
         for root, subFolders, files in os.walk(folderpath):
             for file in files:
                 if re.match(filenamepattern, file):
@@ -46,7 +48,8 @@ class Dataset(object):
     # extract class name from directory in which the file is in
     def create_labels_from_path(self):
         if len(self.imagepaths) < 1:
-            logging.exception("You need to set the imagepaths before creating the labels")
+            logging.error("You need to set the imagepaths before creating the labels")
+            raise Exception
 
         self.labels = []
         for path in self.imagepaths:
@@ -63,8 +66,11 @@ class Dataset(object):
 
     def blob_generator(self):
         if len(self.imagepaths) != len(self.labels) or len(self.labels) != len(self.split_assignments):
-            logging.exception("Size of imagepaths, labels and split assignments are not equal!")
-        for path, label, split_assignment in zip(self.imagepaths, self.labels, self.split_assignments):
+            logging.error("Size of imagepaths, labels and split assignments are not equal!")
+            raise Exception
+        for path, label, split_assignment, idx in zip(self.imagepaths, self.labels, self.split_assignments, range(len(self.labels))):
+            if (idx%10==0):
+                logging.info("Done with " + str(idx) + " images.")
             b = Blob()
             b.meta.label = label
             b.meta.imagepath = path

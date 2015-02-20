@@ -13,7 +13,8 @@ class NonOverrideable(type):
         non_overridables = get_non_overridables(bases)
         for name in dct:
             if name in non_overridables:
-                logging.exception("You can not override %s, it is non-overridable" % name)
+                logging.error("You can not override %s, it is non-overridable" % name)
+                raise Exception
         return type.__new__(mcs, name, bases, dct)
 
 
