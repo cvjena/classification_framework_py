@@ -80,7 +80,7 @@ class Dataset(object):
             yield b
 
     def reset_split(self, value):
-        self.split_assignments = value * ones((len(self.labels),1))
+        self.split_assignments = value * ones((len(self.labels)))
 
 
     def make_random_split(self, source_value, target_value, absolute_per_class=1, relative_per_class=0):
@@ -102,7 +102,7 @@ class Dataset(object):
         # for all classes
         classes = unique(self.labels)
         for c in classes:
-            class_elements = where(logical_and(transpose(array(self.labels)[newaxis])==c, self.split_assignments==source_value))[0]
+            class_elements = where(logical_and(transpose(array(self.labels)[newaxis])==c, transpose(array(self.split_assignments)[newaxis])==source_value))[0]
             if len(class_elements)<=absolute_per_class:
                 self.split_assignments[class_elements]=target_value
             else:
