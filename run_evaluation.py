@@ -21,7 +21,7 @@ __author__ = 'simon'
 
 
 def run():
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.WARNING)
     d = Dataset()
     #d.use_images_in_folder("/home/simon/Datasets/ImageNet_Natural/images/")
     #d.use_images_in_folder("/home/simon/Datasets/ICAO_german/")
@@ -29,33 +29,35 @@ def run():
     d.create_labels_from_path()
     d.fill_split_assignments(1)
     d.make_random_split(1,0,1)
-    # c = Classification()
-    # p1 = AlgorithmPipeline()
-    # p2 = AlgorithmPipeline()
-    # p1.add_algorithm(Resize(512,320))
-    # p1.add_algorithm(HOG())
-    # p1.add_algorithm(SpatialPyramid())
-    # #p1.add_algorithm(MinMaxNormalize())
-    # p2.add_algorithm(Resize(64,32))
-    # p2.add_algorithm(Colorname())
-    # p2.add_algorithm(SpatialPyramid())
-    # #p2.add_algorithm(MinMaxNormalize())
-    # p = ParallelAlgorithm()
-    # p.add_pipeline(p2)
-    # p.add_pipeline(p1)
-    # c.add_algorithm(p)
-    # c.add_algorithm(MulticlassSVM())
-
     c = Classification()
-    c.add_algorithm(Resize(512,320))
-    c.add_algorithm(HOG())
-    c.add_algorithm(SpatialPyramid())
+    p1 = AlgorithmPipeline()
+    p2 = AlgorithmPipeline()
+    p1.add_algorithm(Resize(512,320))
+    p1.add_algorithm(HOG())
+    p1.add_algorithm(SpatialPyramid())
+    #p1.add_algorithm(MinMaxNormalize())
+    p2.add_algorithm(Resize(64,32))
+    p2.add_algorithm(Colorname())
+    p2.add_algorithm(SpatialPyramid())
+    #p2.add_algorithm(MinMaxNormalize())
+    p = ParallelAlgorithm()
+    p.add_pipeline(p2)
+    p.add_pipeline(p1)
+    c.add_algorithm(p)
     c.add_algorithm(MulticlassSVM())
-    c.train(d)
-    for path, gt_label in zip(d.imagepaths, d.labels):
-        logging.info("Predicted class for " + path + " is " + str(c.predict(path).data[0]) + " (GT: " + str(gt_label) + ")")
 
-    Evaluation.random_split_eval(d,c,absolute_train_per_class=1,runs=2)
+    # c = Classification()
+    # c.add_algorithm(Resize(512,320))
+    # c.add_algorithm(HOG())
+    # c.add_algorithm(SpatialPyramid())
+    # c.add_algorithm(MulticlassSVM())
+    #c.train(d)
+    #for path, gt_label in zip(d.imagepaths, d.labels):
+    #    logging.info("Predicted class for " + path + " is " + str(c.predict(path).data[0]) + " (GT: " + str(gt_label) + ")")
+
+    mean_acc,mean_mAP = Evaluation.random_split_eval(d,c,absolute_train_per_class=1,runs=2)
+    logging.warning("Total accuracy is " + str(mean_acc))
+    logging.warning("Total mAP is " + str(mean_mAP))
 
 
 if __name__ == "__main__":

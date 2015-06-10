@@ -14,7 +14,7 @@ class SpatialPyramid(IAlgorithm):
         # Design pattern:
         for blob in blob_generator:
             features = []
-            for level in range(self.levels):
+            for level in range(self.levels+1):
                 # get x splits
                 width_split = array_split(blob.data,2**level,axis=1)
                 for column in width_split:

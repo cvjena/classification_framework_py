@@ -20,7 +20,7 @@ class HOG(IAlgorithm):
         for blob in blob_generator:
             image = color.rgb2gray(blob.data)
 
-            blob.data = hog(image, orientations=9, pixels_per_cell=(8, 8),
+            blob.data = hog(image, orientations=40, pixels_per_cell=(8, 8),
                          cells_per_block=(1, 1))
             yield blob
 
