@@ -28,3 +28,6 @@ class Classification(object):
         b.meta.imagepath = imagepath
         # Use compute all here to incorporate custom compute all functions
         return next(self.pipline.compute([b]))
+
+    def compute(self, blob_generator):
+        return self.pipline.compute(blob_generator)

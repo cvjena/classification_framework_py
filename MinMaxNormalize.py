@@ -1,6 +1,7 @@
 from numpy import Infinity
+from numpy.core.umath import isnan
 from numpy.linalg import linalg
-from numpy.ma import minimum, maximum
+from numpy.ma import minimum, maximum, divide
 from IAlgorithm import IAlgorithm
 
 __author__ = 'simon'
@@ -14,7 +15,7 @@ class MinMaxNormalize(IAlgorithm):
     def _compute(self, blob_generator):
         # Design pattern:
         for blob in blob_generator:
-            blob.data = blob.data/linalg.norm(blob.data.ravel())
+            blob.data = divide(blob.data,self.max)
             yield blob
 
     def _train(self, blob_generator):
@@ -26,3 +27,4 @@ class MinMaxNormalize(IAlgorithm):
                 self.min = minimum(self.min,blob.data)
                 self.max = maximum(self.max,blob.data)
             yield blob
+        #self.max[isnan(self.min)] = 1

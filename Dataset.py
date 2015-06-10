@@ -2,6 +2,8 @@ import csv
 import logging
 
 from numpy import *
+from numpy.core.umath import logical_and
+from numpy.random.mtrand import permutation
 import re
 import os
 
@@ -76,3 +78,33 @@ class Dataset(object):
             b.meta.imagepath = path
             b.meta.split_assignment = split_assignment
             yield b
+
+    def reset_split(self, value):
+        self.split_assignments = value * ones((len(self.labels),1))
+
+
+    def make_random_split(self, source_value, target_value, absolute_per_class=1, relative_per_class=0):
+        # if num_test is None and num_train is None and percentage_train is None:
+        #     logging.error("Your need to provide at lease on of the parameters num_train, num_test or percentage_train!")
+        #     raise Exception
+        # if num_train is not None and num_test is not None:
+        #     logging.error("You can only specify either num_train or num_test!")
+        #     raise Exception
+        if source_value not in self.split_assignments:
+            logging.warning("No element with value 'source_value' in self.split_assignments!")
+        if absolute_per_class < 1:
+            logging.error("Invalid value for parameter absolute_per_class.")
+            raise Exception
+        if relative_per_class > 1 or relative_per_class < 0:
+            logging.error("Invalid value for parameter relative_per_class.")
+            raise Exception
+
+        # for all classes
+        classes = unique(self.labels)
+        for c in classes:
+            class_elements = where(logical_and(transpose(array(self.labels)[newaxis])==c, self.split_assignments==source_value))[0]
+            if len(class_elements)<=absolute_per_class:
+                self.split_assignments[class_elements]=target_value
+            else:
+                how_many = max(absolute_per_class,relative_per_class*len(class_elements))
+                self.split_assignments[permutation(class_elements)[:how_many]]=target_value

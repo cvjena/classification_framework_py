@@ -7,12 +7,21 @@ __author__ = 'simon'
 
 class IAlgorithm(object, metaclass=NonOverrideable):
     def __init__(self):
-        pass
+        use_cache = False
+        _cached_blobs = []
 
     @non_overridable
     def compute(self, blob_generator):
         logging.debug("Using " + str(type(self)) + " compute function.")
-        return self._compute(blob_generator)
+        if self.use_cache:
+            if len(self._cached_blobs)>0:
+                return self._cached_blobs
+            else:
+                for blob in self._compute(blob_generator):
+                    self._cached_blobs.append(blob)
+                    yield blob
+        else:
+            self._compute(blob_generator)
 
     def _compute(self, blob_generator):
         raise NotImplementedError("Not implemented.")

@@ -1,28 +1,20 @@
-import time
+import multiprocessing
+from time import sleep
 
-import random
+semaphore = multiprocessing.Semaphore(2)
 
+def do_job(id):
+    with semaphore:
+        sleep(1)
+    print("Finished job")
 
-__author__ = 'simon'
+def main():
+    pool = multiprocessing.Pool(6)
+    for job_id in range(6):
+        print("Starting job")
+        pool.apply_async(do_job, [job_id])
+    pool.close()
+    pool.join()
 
-
-def foo():
-    yield random.random()
-    print("foo - 1")
-    yield random.random()
-    print("foo - 2")
-    yield random.random()
-    print("foo - 3")
-
-
-def foo2():
-    return foo()
-
-def use_generator(gen):
-    for item, item2 in zip(foo2(), foo2()):
-        time.sleep(1)
-        print(str(item) + " " + str(item2))
-
-gen= foo()
-use_generator(gen)
-time.sleep(1)
+if __name__ == "__main__":
+    main()

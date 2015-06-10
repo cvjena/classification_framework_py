@@ -3,6 +3,7 @@ from AlgorithmPipeline import AlgorithmPipeline
 
 from Classification import Classification
 from Colorname import Colorname
+from Evaluation import Evaluation
 from HOG import HOG
 from ImageReader import ImageReader
 from MeanCalculator import MeanCalculator
@@ -44,9 +45,10 @@ def run():
     c.add_algorithm(p)
     c.add_algorithm(MinMaxNormalize())
     c.add_algorithm(MulticlassSVM())
-    c.train(d)
-    for path, gt_label in zip(d.imagepaths, d.labels):
-        logging.info("Predicted class for " + path + " is " + str(c.predict(path).data[0]) + " (GT: " + str(gt_label) + ")")
+    #c.train(d)
+    #for path, gt_label in zip(d.imagepaths, d.labels):
+    #    logging.info("Predicted class for " + path + " is " + str(c.predict(path).data[0]) + " (GT: " + str(gt_label) + ")")
+    Evaluation.random_split_eval(d,c,absolute_train_per_class=1,runs=10)
 
 
 if __name__ == "__main__":
