@@ -18,10 +18,6 @@ class MulticlassSVM(IAlgorithm.IAlgorithm):
 
     def _compute(self, blob_generator):
         for blob in blob_generator:
-            flat_data=blob.data.ravel()
-            # Add 1 as feature for bias in SVM
-            d = ones((1,flat_data.shape[0]+1))
-            d[:,:-1] = flat_data
             blob.data = self.svm_model.predict(self._add_bias(blob.data.ravel()))
             yield blob
 
@@ -49,6 +45,6 @@ class MulticlassSVM(IAlgorithm.IAlgorithm):
             yield b
 
     def _add_bias(self, flattened_vector):
-        d = ones((1,flattened_vector.shape[0]+1))
-        d[:,:-1] = flattened_vector
-        return d
+        #d = ones((1,flattened_vector.shape[0]+1))
+        #d[:,:-1] = flattened_vector
+        return flattened_vector
