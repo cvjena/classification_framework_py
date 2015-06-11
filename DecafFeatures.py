@@ -29,8 +29,8 @@ class DecafFeatures(IAlgorithm):
             yield blob
 
     def decafFeatures(self, image):
-	img = imresize(img,(256,256,3),interp='bicubic')
-        score = self.net.classifiyWholeImage(img)
+        image = imresize(image,(256,256,3),interp='bicubic')
+        score = self.net.classifiyWholeImage(image)
         if self.layer=="score":
             return list(score)
         else:

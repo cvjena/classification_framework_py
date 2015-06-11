@@ -55,11 +55,7 @@ def run():
     # c.add_algorithm(MulticlassSVM())
 
     c = Classification()
-    p1 = AlgorithmPipeline()
-    p1.add_algorithm(DecafFeatures(model, meta, layer))
-    p.add_pipeline(p1)
-    p = ParallelAlgorithm()
-    
+    c.add_algorithm(DecafFeatures(model, meta, layer))
     c.add_algorithm(MulticlassSVM())
     #c.train(d)
     #for path, gt_label in zip(d.imagepaths, d.labels):
