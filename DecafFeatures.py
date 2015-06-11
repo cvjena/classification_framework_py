@@ -32,9 +32,9 @@ class DecafFeatures(IAlgorithm):
         image = imresize(image,(256,256,3),interp='bicubic')
         score = self.net.classifiyWholeImage(image)
         if self.layer=="score":
-            return list(score)
+            return (score)
         else:
-            return list(self.net.feature(self.layer)[0].reshape((1,-1))[0])
+            return (self.net.feature(self.layer)[0].reshape((1,-1))[0])
             
 #def __init__(self,model,meta,layer):
 #        self.model = model
