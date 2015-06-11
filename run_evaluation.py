@@ -61,7 +61,7 @@ def run():
     #for path, gt_label in zip(d.imagepaths, d.labels):
     #    logging.info("Predicted class for " + path + " is " + str(c.predict(path).data[0]) + " (GT: " + str(gt_label) + ")")
 
-    mean_acc,mean_mAP = Evaluation.random_split_eval(d,c,absolute_train_per_class=1,runs=10)
+    mean_acc,mean_mAP = Evaluation.random_split_eval(d,c,absolute_train_per_class=10,runs=10)
     logging.warning("Total accuracy is " + str(mean_acc))
     logging.warning("Total mAP is " + str(mean_mAP))
 
