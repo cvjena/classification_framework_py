@@ -6,6 +6,7 @@ from numpy.core.umath import logical_and
 from numpy.random.mtrand import permutation
 import re
 import os
+import sys
 
 from Blob import Blob
 
@@ -41,11 +42,12 @@ class Dataset(object):
             items = items[skip_rows:]
             self.__dict__[target_field].extend(items)
 
-    def use_images_in_folder(self, folderpath, filenamepattern=".*\.(jpg|JPEG|jpeg)"):
+    def use_images_in_folder(self, folderpath, filenamepattern=".*\.(jpg|JPEG|jpeg|png)"):
         for root, subFolders, files in os.walk(folderpath):
             for file in files:
                 if re.match(filenamepattern, file):
                     self.imagepaths.append(root + "/" + file)
+                    logging.debug("Added "+ self.imagepaths[-1])
 
     # extract class name from directory in which the file is in
     def create_labels_from_path(self):
@@ -72,7 +74,9 @@ class Dataset(object):
             raise Exception
         for path, label, split_assignment, idx in zip(self.imagepaths, self.labels, self.split_assignments, range(len(self.labels))):
             if (idx%10==0):
-                logging.info("Done with " + str(idx) + " images.")
+                sys.stdout.flush()
+                sys.stdout.write("\r\rDone with %.2f%%" % (idx/len(self.labels)*100))
+                sys.stdout.flush()
             b = Blob()
             b.meta.label = label
             b.meta.imagepath = path
