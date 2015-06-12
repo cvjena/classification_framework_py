@@ -16,18 +16,22 @@ from Resize import Resize
 import cProfile
 import re
 from SpatialPyramid import SpatialPyramid
-from Decaf import Decaf
+from DecafFeatures import DecafFeatures
 
 __author__ = 'simon'
 
 
 def run():
     logging.getLogger().setLevel(logging.WARNING)
+    basedir = '/home/simon/Research/lib/decaf-extractor/models/'
+    model = basedir + "imagenet.jeffnet.epoch90"
+    meta = basedir + "imagenet.jeffnet.meta"
+    layer = "fc7_neuron_cudanet_out"
     d = Dataset()
     #d.use_images_in_folder("/home/simon/Datasets/ImageNet_Natural/images/")
     #d.use_images_in_folder("/home/simon/Datasets/ICAO_german/")
     #d.use_images_in_folder("/home/simon/Datasets/desko_ids/images_unique/")
-    d.use_images_in_folder("/home/jaeger/data/croatianFishDataset1-1Dir/")
+    d.use_images_in_folder("/home/jaeger/data/croatianFishDataset1-5Dir/")
     d.create_labels_from_path()
     d.fill_split_assignments(1)
     # d.make_random_split(1,0,1)
@@ -50,8 +54,7 @@ def run():
     # c.add_algorithm(MulticlassSVM())
 
     c = Classification()
-    basedir = '/home/simon/Research/lib/decaf-extractor/models/'
-    c.add_algorithm(Decaf(basedir+'imagenet.jeffnet.epoch90',basedir+'imagenet.jeffnet.meta','fc6_cudanet_out'))
+    c.add_algorithm(DecafFeatures(model, meta, layer))
     c.add_algorithm(MulticlassSVM())
     #c.train(d)
     #for path, gt_label in zip(d.imagepaths, d.labels):
