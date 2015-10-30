@@ -11,9 +11,9 @@ __author__ = 'simon'
 
 class MeanCalculator(IAlgorithm.IAlgorithm):
     def __init__(self):
-        self.min=Infinity
+        self.init_threading()
 
     def _compute(self, blob_generator):
         for blob in blob_generator:
-            blob.data = array([mean(blob.data)])
+            blob.data = blob.data.ravel().mean()
             yield blob
