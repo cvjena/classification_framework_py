@@ -54,7 +54,6 @@ class Evaluation:
         test_labels = [blob.meta.label for blob in dataset.blob_generator() if blob.meta.split_assignment==test_split]
         test_predictions = [blob.data[0] for blob in classification.compute((blob for blob in dataset.blob_generator() if blob.meta.split_assignment==test_split))]
 
-
         # Compute confusion matrix
         cm = confusion_matrix(test_labels, test_predictions)
         acc = cm.diagonal().sum()/cm.ravel().sum()
