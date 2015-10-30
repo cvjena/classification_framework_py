@@ -11,7 +11,7 @@ __author__ = 'simon'
 
 class ImageReader(IAlgorithm.IAlgorithm):
     def __init__(self):
-        pass#self.init_threading()
+        self.init_threading()
 
     def _compute(self, blob_generator):
         for blob in blob_generator:
