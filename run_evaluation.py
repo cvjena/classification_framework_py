@@ -40,31 +40,30 @@ def run():
     #d.read_from_file("/home/simon/Datasets/CUB_200_2011/labels.txt","labels","int")
 
     c = Classification()
-    c.add_algorithm(ImageReader())
-    c.add_algorithm(Resize(10,6))
+    c.add_algorithm(Resize(512,320))
     # #c.add_algorithm(Noise('saltpepper',0.1))
-    #p = ParallelAlgorithm()
+    p = ParallelAlgorithm()
     #
-    # p1 = AlgorithmPipeline()
-    # #p1.add_algorithm(Resize(128,64))
-    #c.add_algorithm(HOG())
-    #c.add_algorithm(SpatialPyramid())
+    p1 = AlgorithmPipeline()
+    p1.add_algorithm(HOG())
+    p1.add_algorithm(SpatialPyramid())
     # #p1.add_algorithm(MinMaxNormalize())
-    # c.add_algorithm(NormNormalize())
-    # p.add_pipeline(p1)
-    #
-    #p2 = AlgorithmPipeline()
-    #p2.add_algorithm(Resize(64,32))
-    #p2.add_algorithm(Colorname())
-    #p2.add_algorithm(SpatialPyramid())
-    #p2.add_algorithm(NormNormalize())
+    p1.add_algorithm(NormNormalize())
+    p.add_pipeline(p1)
+    
+    p2 = AlgorithmPipeline()
+    p2.add_algorithm(Resize(64,32))
+    p2.add_algorithm(Colorname())
+    p2.add_algorithm(SpatialPyramid())
+    p2.add_algorithm(NormNormalize())
     # #p2.add_algorithm(MinMaxNormalize())
-    #p.add_pipeline(p2)
-    #
-    #c.add_algorithm(p)
+    p.add_pipeline(p2)
+    
+    c.add_algorithm(p)
     # #c.add_algorithm(MinMaxNormalize())
-    # #c.add_algorithm(NormNormalize())
+    #c.add_algorithm(NormNormalize())
     # c.add_algorithm(MeanCalculator())
+    #c.add_algorithm(Resize(32,24))
     c.add_algorithm(MulticlassSVM())
     # #c.train(d)
     # #for path, gt_label in zip(d.imagepaths, d.labels):
@@ -77,7 +76,7 @@ def run():
     #with open('run_evaluation.py', 'r') as fin:
     #    print(fin.read())
 
-    mean_acc,mean_mAP = Evaluation.random_split_eval(d,c,absolute_train_per_class=2,runs=1)
+    mean_acc,mean_mAP = Evaluation.random_split_eval(d,c,absolute_train_per_class=1,runs=1)
     #mean_acc,mean_mAP = Evaluation.fixed_split_eval(d,c)
     logging.warning("Total accuracy is " + str(mean_acc))
     logging.warning("Total mAP is " + str(mean_mAP))

@@ -11,12 +11,12 @@ __author__ = 'simon'
 class Colorname(IAlgorithm):
     def __init__(self):
         self.mapping = genfromtxt('data/colormapping.txt', delimiter=',')[:,3:]
-        self.init_threading()
 
     def _compute(self, blob_generator):
         # Design pattern:
         for blob in blob_generator:
             # Map all RGB values to colorname histograms
+            blob.data *= 255
             if len(blob.data.shape)==2:
                 blob.data = (blob.data.astype(np.uint8)/8).astype(np.uint32)
                 r=blob.data

@@ -7,20 +7,63 @@ import numpy as np
 from scipy import sqrt
 from scipy.constants import pi
 from scipy.ndimage import uniform_filter
+import cv2
 
 __author__ = 'simon'
 
 
+import multiprocessing
+def fun(f,q_in,q_out):
+        while True:
+                i,x = q_in.get()
+                if i is None:
+                        break
+                q_out.put((i,f(x)))
+
+def parmap(f, X, nprocs = 2):
+        q_in   = multiprocessing.Queue(2)
+        q_out  = multiprocessing.Queue()
+
+        proc = [multiprocessing.Process(target=fun,args=(f,q_in,q_out)) for _ in range(nprocs)]
+        for p in proc:
+                p.daemon = True
+                p.start()
+        sent = [q_in.put((i,x)) for i,x in enumerate(X)]
+        [q_in.put((None,None)) for _ in range(nprocs)]
+        res = [q_out.get() for _ in range(len(sent))]
+
+        [p.join() for p in proc]
+
+        return [x for i,x in sorted(res)]
+
 class HOG(IAlgorithm):
         def __init__(self):
-                self.init_threading()
-
+                # _winSize, _blockSize, _blockStride, _cellSize, _nbins
+                self.hog = cv2.HOGDescriptor()#self.init_threading()
+                self.dim_red_matrix = np.random.rand(self.hog.getDescriptorSize(), 50)
+                
+        def single_compute(self,blob):
+                image = color.rgb2gray(blob.data)
+                blob.data = self.cvhog(image)
+                return blob
+        
         def _compute(self, blob_generator):
-                for blob in blob_generator:
-                        image = color.rgb2gray(blob.data)
-                        blob.data = hog(image, orientations=40, pixels_per_cell=(8, 8),
-                                        cells_per_block=(1, 1),normalise=True)
-                        yield blob
+                if False:
+                        i = 0
+                        for blob in parmap(self.single_compute, blob_generator):
+                                yield blob
+                else:
+                        for blob in blob_generator:
+                                yield self.single_compute(blob)
+
+
+
+        def cvhog(self,img, orientations=9):
+                img = (img*255).astype('uint8')
+                nwindowsX = (img.shape[1] - self.hog.winSize[0])/self.hog.cellSize[0] + 1
+                desc = self.hog.compute(img)
+                desc = desc.reshape((-1,nwindowsX,self.hog.getDescriptorSize()))
+                return np.dot(desc,self.dim_red_matrix)
 
 def hog(image, orientations=9, pixels_per_cell=(8, 8),
         cells_per_block=(3, 3), visualise=False, normalise=False):

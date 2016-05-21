@@ -7,6 +7,7 @@ import multiprocessing
 __author__ = 'simon'
 
 
+
 def pool_worker(callable_blob):
     class_obj,blob = callable_blob
     return next(class_obj._compute([blob]))
