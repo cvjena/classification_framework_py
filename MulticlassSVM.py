@@ -10,7 +10,7 @@ __author__ = 'simon'
 
 
 class MulticlassSVM(IAlgorithm.IAlgorithm):
-    def __init__(self, penalty='l2', loss='l2', dual=True, tol=0.0001, C=1.0, multi_class='ovr', fit_intercept=True,
+    def __init__(self, penalty='l2', loss='squared_hinge', dual=True, tol=0.0001, C=1.0, multi_class='ovr', fit_intercept=True,
                  intercept_scaling=1, class_weight=None, verbose=0, random_state=None):
         self.svm_model = LinearSVC(penalty=penalty, loss=loss, dual=dual, tol=tol, C=C, multi_class=multi_class,
                                    fit_intercept=fit_intercept, intercept_scaling=intercept_scaling,
@@ -18,7 +18,7 @@ class MulticlassSVM(IAlgorithm.IAlgorithm):
 
     def _compute(self, blob_generator):
         for blob in blob_generator:
-            blob.data = self.svm_model.predict(self._add_bias(blob.data.ravel()))
+            blob.data = self.svm_model.predict(self._add_bias(blob.data.reshape(1,-1)))
             yield blob
 
     def _train(self, blob_generator):

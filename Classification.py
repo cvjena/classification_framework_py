@@ -4,6 +4,7 @@ from Blob import Blob
 
 from ImageReader import ImageReader
 import IAlgorithm
+import pyprind
 
 
 __author__ = 'simon'
@@ -23,11 +24,27 @@ class Classification(object):
     def add_algorithm(self, algorithm):
         self.pipline.add_algorithm(algorithm)
 
-    def predict(self, imagepath):
+    def compute(self, image):
         b = Blob()
-        b.meta.imagepath = imagepath
+        if isinstance(image, str):
+            b.meta.imagepath = image
+        else:
+            b.data = image
         # Use compute all here to incorporate custom compute all functions
-        return next(self.pipline.compute([b]))
-
-    def compute(self, blob_generator):
-        return self.pipline.compute(blob_generator)
+        return next(self.pipline.compute([b])).data
+    
+    def compute_all(self, images):
+        in_blobs = list()
+        all_images = list(images)
+        for im in all_images:
+            if isinstance(im, Blob):
+                b = im
+            else:
+                b = Blob()
+                if isinstance(im, str):
+                    b.meta.imagepath = im
+                else:
+                    b.data = im
+                b.meta.total_num = len(all_images)
+            in_blobs.append(b)
+        return list([b.data for b in self.pipline.compute(in_blobs)])

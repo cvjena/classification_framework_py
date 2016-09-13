@@ -48,12 +48,12 @@ class Evaluation:
 
     @staticmethod
     def _eval(dataset, classification, train_split, test_split):
-        logging.info("Training starts")
+        logging.warning("Training starts")
         train_labels = [blob.meta.label for blob in classification.pipline.train((blob for blob in dataset.blob_generator() if blob.meta.split_assignment==train_split))]
-        logging.info("Testing start")
+        logging.warning("Testing start")
         test_labels = [blob.meta.label for blob in dataset.blob_generator() if blob.meta.split_assignment==test_split]
-        test_predictions = [blob.data[0] for blob in classification.compute((blob for blob in dataset.blob_generator() if blob.meta.split_assignment==test_split))]
-
+        test_predictions = [blob.data[0] for blob in classification.compute_all([blob for blob in dataset.blob_generator() if blob.meta.split_assignment==test_split])]
+        logging.warning("Finished")
         # Compute confusion matrix
         cm = confusion_matrix(test_labels, test_predictions)
         acc = cm.diagonal().sum()/cm.ravel().sum()

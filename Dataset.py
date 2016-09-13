@@ -7,6 +7,7 @@ from numpy.random.mtrand import permutation
 import re
 import os
 import sys
+import pyprind
 
 from Blob import Blob
 
@@ -29,6 +30,8 @@ class Dataset(object):
         with open(filepath, 'r') as f:
             reader = csv.reader(f, delimiter=delimiter)
             items = list(reader)
+            # Remove empty elements
+            items = filter(None, items)
             items = [it[column] for it in items]
             if target_field == "imagepaths":
                 items = [prepend_string + row for row in items]
@@ -41,7 +44,7 @@ class Dataset(object):
                 raise Exception
             items = items[skip_rows:]
             self.__dict__[target_field].extend(items)
-
+            
     def use_images_in_folder(self, folderpath, filenamepattern=".*\.(jpg|JPEG|jpeg|png)"):
         for root, subFolders, files in os.walk(folderpath):
             for file in files:
@@ -72,16 +75,14 @@ class Dataset(object):
         if len(self.imagepaths) != len(self.labels) or len(self.labels) != len(self.split_assignments):
             logging.error("Size of imagepaths, labels and split assignments are not equal!")
             raise Exception
+        bar = pyprind.ProgBar(len(self.imagepaths))
         for path, label, split_assignment, idx in zip(self.imagepaths, self.labels, self.split_assignments, range(len(self.labels))):
-            if (idx%10==0):
-                sys.stdout.flush()
-                sys.stdout.write("\r\rDone with %.2f%%" % (idx/len(self.labels)*100))
-                sys.stdout.flush()
             b = Blob()
             b.meta.label = label
             b.meta.imagepath = path
             b.meta.split_assignment = split_assignment
             yield b
+            bar.update()
 
     def reset_split(self, value):
         self.split_assignments = value * ones((len(self.labels)))

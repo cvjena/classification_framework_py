@@ -1,6 +1,6 @@
 from Attributes import *
 from Blob import Blob
-import queue
+
 import threading
 import multiprocessing
 
@@ -12,14 +12,14 @@ def pool_worker(callable_blob):
     class_obj,blob = callable_blob
     return next(class_obj._compute([blob]))
 
-class IAlgorithm(object, metaclass=NonOverrideable):
+class IAlgorithm(object):
     def __init__(self):
         self.use_cache = False
         self._cached_blobs = []
 
     def init_threading(self, num_threads = 4):
         #self.manager = multiprocessing.Manager()
-        self.num_threads = num_threads
+        #self.num_threads = num_threads
         #self.reader = multiprocessing.Pool(processes=1)
         #self.in_queue = multiprocessing.JoinableQueue(2*self.num_threads)
         #self.out_queue = multiprocessing.JoinableQueue()
@@ -29,7 +29,8 @@ class IAlgorithm(object, metaclass=NonOverrideable):
         #self.cur_generator_lock = multiprocessing.Lock()
         #self.cur_generator_finished = True
 
-        self.threading_init_finished = True
+        #self.threading_init_finished = True
+        pass
 
 
     def read_thread(in_generator, in_queue):
