@@ -12,17 +12,17 @@ __author__ = 'simon'
 
 class Classification(object):
     def __init__(self):
-        self.pipline = AlgorithmPipeline()
-        self.pipline.add_algorithm(ImageReader())
+        self.pipeline = AlgorithmPipeline()
+        self.pipeline.add_algorithm(ImageReader())
 
     def train(self, dataset):
-        out_generator = self.pipline.train(dataset.blob_generator())
+        out_generator = self.pipeline.train(dataset.blob_generator())
         # Consume all blobs from the last generator to start the actual calculations
         for b in out_generator:
             pass
 
     def add_algorithm(self, algorithm):
-        self.pipline.add_algorithm(algorithm)
+        self.pipeline.add_algorithm(algorithm)
 
     def compute(self, image):
         b = Blob()
@@ -31,12 +31,10 @@ class Classification(object):
         else:
             b.data = image
         # Use compute all here to incorporate custom compute all functions
-        return next(self.pipline.compute([b])).data
+        return next(self.pipeline.compute([b])).data
     
-    def compute_all(self, images):
-        in_blobs = list()
-        all_images = list(images)
-        for im in all_images:
+    def _gen_inblobs(self, images):
+        for im in pyprind.prog_bar(images):
             if isinstance(im, Blob):
                 b = im
             else:
@@ -45,6 +43,7 @@ class Classification(object):
                     b.meta.imagepath = im
                 else:
                     b.data = im
-                b.meta.total_num = len(all_images)
-            in_blobs.append(b)
-        return list([b.data for b in self.pipline.compute(in_blobs)])
+            yield b
+    
+    def compute_all(self, images):
+        return list([b.data for b in self.pipeline.compute(self._gen_inblobs(images))])
