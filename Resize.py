@@ -25,6 +25,6 @@ class Resize(IAlgorithm):
                     ratio = self.target_shape / np.min(blob.data.shape[:2])
                 if self.mode == 'resize_larger_side':
                     ratio = self.target_shape / np.max(blob.data.shape[:2])
-                new_shape = tuple([int(blob.data.shape[i] * ratio) for i in range(2)])
+                new_shape = np.round(blob.data.shape[:2] * ratio)
                 blob.data = resize(blob.data, new_shape, 1)
             yield blob
