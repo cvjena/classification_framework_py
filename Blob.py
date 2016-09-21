@@ -9,7 +9,7 @@ class BlobMeta(object):
         self.imagepath = ""
         self.label = array([])
         self.split_assignment = -1
-        self.uuid = uuid.uuid4()
+        self.uuid = str(uuid.uuid4())
 
 
 class Blob(object):
