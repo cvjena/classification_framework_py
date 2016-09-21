@@ -75,14 +75,13 @@ class Dataset(object):
         if len(self.imagepaths) != len(self.labels) or len(self.labels) != len(self.split_assignments):
             logging.error("Size of imagepaths, labels and split assignments are not equal!")
             raise Exception
-        bar = pyprind.ProgBar(len(self.imagepaths))
+        
         for path, label, split_assignment, idx in zip(self.imagepaths, self.labels, self.split_assignments, range(len(self.labels))):
             b = Blob()
             b.meta.label = label
             b.meta.imagepath = path
             b.meta.split_assignment = split_assignment
             yield b
-            bar.update()
 
     def reset_split(self, value):
         self.split_assignments = value * ones((len(self.labels)))

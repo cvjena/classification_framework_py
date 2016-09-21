@@ -1,5 +1,6 @@
 from IAlgorithm import IAlgorithm
 import numpy as np
+import logging
 
 __author__ = 'simon'
 
@@ -8,6 +9,7 @@ class Crop(IAlgorithm):
     ''' Crop '''
     def __init__(self, target_shape, mode = 'center'):
         assert mode in ['center', 'random'], "Mode %s is not know for layer 'crop'"%str(mode)
+        assert len(target_shape) >= 2, logging.warning('Please pass width and height to Crop unless you really only want to crop the first dimension')
         self.target_shape = np.array(target_shape)
         self.mode = mode
         
