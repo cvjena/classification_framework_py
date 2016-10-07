@@ -2,6 +2,7 @@ import logging
 import numpy
 from numpy import nanmean, mean
 from sklearn.metrics import confusion_matrix
+import pyprind
 
 __author__ = 'simon'
 
@@ -48,19 +49,24 @@ class Evaluation:
 
     @staticmethod
     def _eval(dataset, classification, train_split, test_split):
-        logging.warning("Training starts")
-        train_labels = [blob.meta.label for blob in classification.pipeline.train((blob for blob in dataset.blob_generator() if blob.meta.split_assignment==train_split))]
-        logging.warning("Testing start")
-        test_labels = [blob.meta.label for blob in dataset.blob_generator() if blob.meta.split_assignment==test_split]
-        test_predictions = [blob.data[0] for blob in classification.compute_all([blob for blob in dataset.blob_generator() if blob.meta.split_assignment==test_split])]
-        logging.warning("Finished")
+        train_blobs = [b for b in dataset.blob_generator() if b.meta.split_assignment==train_split]
+        test_blobs = [b for b in dataset.blob_generator() if b.meta.split_assignment==test_split]
+        
+        # Train pipeline
+        train_output = list(classification.pipeline.train(pyprind.prog_bar(train_blobs)))
+        # Test pipeline
+        test_output = list(classification.pipeline.compute(pyprind.prog_bar(test_blobs)))
+        test_pred = [blob.data[0] for blob in test_output]
+        
         # Compute confusion matrix
-        cm = confusion_matrix(test_labels, test_predictions)
+        train_labels = [blob.meta.label for blob in train_output]
+        test_labels = [b.meta.label for b in test_output]
+        cm = confusion_matrix(test_labels, test_pred)
         acc = cm.diagonal().sum()/cm.ravel().sum()
-        logging.warning("Accuracy is " + str(acc))
         cm = cm / cm.sum(axis=1,keepdims=True)
         mAP = nanmean(cm.diagonal())
-        logging.warning("mAP is " + str(mAP))
+        logging.warning("Accuracy is " + str(acc))
+        logging.warning("ARR is " + str(mAP))
         return (acc,mAP)
 
 
