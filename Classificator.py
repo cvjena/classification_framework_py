@@ -1,5 +1,5 @@
 from sklearn.svm import LinearSVC
-from numpy import array, vstack, ones
+import numpy as np
 from Blob import Blob
 import logging
 
@@ -28,9 +28,17 @@ class Classificator(IAlgorithm.IAlgorithm):
             labels.append(blob.meta.label)
             metas.append(blob.meta)
             
+        # Stack data to matrix explicitly here, as both fit and predict
+        # would to this stacking otherwise
+        try:
+            data = np.vstack(data)
+        except ValueError:
+            logging.error("Length of all feature vectors need to be the same for Classificator training.")
+            raise Exception
+        
         logging.warning('Training the model, this might take a while')
         self.model.fit(data, labels)
-
+    
         for (d,m) in zip(self.model.predict(data),metas):
             b = Blob()
             b.data = d
