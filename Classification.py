@@ -33,8 +33,12 @@ class Classification(object):
         # Use compute all here to incorporate custom compute all functions
         return next(self.pipeline.compute([b])).data
     
-    def _gen_inblobs(self, images):
-        for im in pyprind.prog_bar(images):
+    def _gen_inblobs(self, images, prog_bar=True):
+        if prog_bar:
+            im_gen = pyprind.prog_bar(list(images))
+        else:
+            im_gen = list(images)
+        for im in im_gen:
             if isinstance(im, Blob):
                 b = im
             else:
@@ -45,5 +49,5 @@ class Classification(object):
                     b.data = im
             yield b
     
-    def compute_all(self, images):
-        return list([b.data for b in self.pipeline.compute(self._gen_inblobs(images))])
+    def compute_all(self, images, prog_bar=True):
+        return list([b.data for b in self.pipeline.compute(self._gen_inblobs(images, prog_bar))])
