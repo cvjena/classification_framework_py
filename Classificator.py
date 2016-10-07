@@ -27,12 +27,8 @@ class Classificator(IAlgorithm.IAlgorithm):
             data.append(blob.data.ravel())
             labels.append(blob.meta.label)
             metas.append(blob.meta)
-        try:
-            data = vstack(data)
-        except ValueError:
-            logging.error("Size of all input data needs to be the same for SVM training.")
-            raise Exception
-
+            
+        logging.warning('Training the model, this might take a while')
         self.model.fit(data, labels)
 
         for (d,m) in zip(self.model.predict(data),metas):
