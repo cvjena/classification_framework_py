@@ -1,6 +1,7 @@
 import logging
 import numpy
 from numpy import nanmean, mean
+import numpy as np
 from sklearn.metrics import confusion_matrix
 import pyprind
 
@@ -54,13 +55,15 @@ class Evaluation:
         
         # Train pipeline
         train_output = list(classification.pipeline.train(pyprind.prog_bar(train_blobs)))
+        train_labels = [blob.meta.label for blob in train_output]
+        id_label_mapping = np.unique(train_labels)
         # Test pipeline
         test_output = list(classification.pipeline.compute(pyprind.prog_bar(test_blobs)))
-        test_pred = [blob.data[0] for blob in test_output]
+        test_labels = [b.meta.label for b in test_output]
+        test_pred = [id_label_mapping[blob.data[0].argmax()] for blob in test_output]
         
         # Compute confusion matrix
-        train_labels = [blob.meta.label for blob in train_output]
-        test_labels = [b.meta.label for b in test_output]
+        
         cm = confusion_matrix(test_labels, test_pred)
         acc = cm.diagonal().sum()/cm.ravel().sum()
         cm = cm / cm.sum(axis=1,keepdims=True)
