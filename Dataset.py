@@ -102,7 +102,8 @@ class Dataset(object):
         if relative_per_class > 1 or relative_per_class < 0:
             logging.error("Invalid value for parameter relative_per_class.")
             raise Exception
-
+        
+        self.split_assignments = array(self.split_assignments)
         # for all classes
         classes = unique(self.labels)
         for c in classes:
