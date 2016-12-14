@@ -35,14 +35,8 @@ class Caffe(IAlgorithm):
         self.mean = mean
         assert inblob in self.net.blobs.keys(), 'Blob %s does not exist'%inblob
         self.inblob = self.net.blobs[inblob]
-        assert outblob in self.net.blobs.keys(), 'Blob %s does not exist'%outblob
-        if outblob:
-            self.outblob = self.net.blobs[outblob]
-        else:
-            assert endlayer in self.net.blobs.keys(), 'Neither outblob is defined nor does endlayer exists as a blob'
-            self.outblob = self.net.blobs[endlayer]
-        assert endlayer is None or endlayer in list(self.net._layer_names), 'Layer %s does not exist'%endlayer
-        self.endlayer = endlayer
+        self.set_output(outblob, endlayer)
+        assert batchsize > 0, 'Batch size has to be greater or equal to 0'
         self.inblob.reshape(batchsize, *self.inblob.data.shape[1:])
         
     def preprocess(self, img):
@@ -81,3 +75,13 @@ class Caffe(IAlgorithm):
             
     def get_net(self):
         return self.net
+    
+    def set_output(self, outblob, endlayer):
+        assert outblob in self.net.blobs.keys(), 'Blob %s does not exist'%outblob
+        if outblob:
+            self.outblob = self.net.blobs[outblob]
+        else:
+            assert endlayer in self.net.blobs.keys(), 'Neither outblob is defined nor does endlayer exists as a blob'
+            self.outblob = self.net.blobs[endlayer]
+        assert endlayer is None or endlayer in list(self.net._layer_names), 'Layer %s does not exist'%endlayer
+        self.endlayer = endlayer
