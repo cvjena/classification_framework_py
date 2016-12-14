@@ -22,7 +22,7 @@ class Dataset(object):
         self.classnames_to_labels = {}
         self.split_assignments = []
 
-    def read_from_file(self, filepath, target_field, datatype, column=0, delimiter=" ", skip_rows=0, prepend_string=""):
+    def read_from_file(self, filepath, target_field, datatype, column=0, delimiter=",", skip_rows=0, prepend_string=""):
         if target_field not in self.__dict__:
             logging.error("Invalid target field.")
             raise Exception
