@@ -12,8 +12,9 @@ __author__ = 'simon'
 
 
 class ImageReader(IAlgorithm.IAlgorithm):
-    def __init__(self):
-        pass#self.init_threading()
+    def __init__(self, mode = 'PIL'):
+        self.mode = mode
+        assert self.mode in ['PIL', 'OpenCV'], 'Unknown mode passed to ImageReader'
 
     def _compute(self, blob_generator):
         for blob in blob_generator:
@@ -23,7 +24,10 @@ class ImageReader(IAlgorithm.IAlgorithm):
                 # don't want to change the architecture
                 if blob.data.size == 0 and blob.meta.imagepath:
                     assert os.path.isfile(blob.meta.imagepath), 'Could not open image %s'%blob.meta.imagepath
-                    blob.data = np.float32(PIL.Image.open(blob.meta.imagepath).convert('RGB')) / 255
+                    if self.mode == 'PIL':
+                        blob.data = np.float32(PIL.Image.open(blob.meta.imagepath).convert('RGB')) / 255
+                    elif self.mode == 'OpenCV':
+                        blob.data = np.float32(PIL.Image.open(blob.meta.imagepath).convert('RGB')) / 255
                     yield blob
                 else:
                     yield blob
