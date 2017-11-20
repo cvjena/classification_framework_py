@@ -5,7 +5,7 @@ from numpy import array_split, mean, hstack
 
 __author__ = 'simon'
 
-
+# TODO: weighting of the different levels is missing 
 class SpatialPyramid(IAlgorithm):
     def __init__(self, levels=3):
         self.levels = levels

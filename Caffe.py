@@ -40,7 +40,7 @@ class Caffe(IAlgorithm):
         self.inblob.reshape(batchsize, *self.inblob.data.shape[1:])
         
     def preprocess(self, img):
-        return np.float32(np.rollaxis(img, 2)[::-1]) - self.net.transformer.mean['data']
+        return (np.rollaxis(img, 2)[::-1]) - self.net.transformer.mean['data']
 
     def _compute(self, blob_generator):
         finished = False
@@ -50,7 +50,7 @@ class Caffe(IAlgorithm):
                 # TODO: maybe the input is not properly shaped?
                 for idx, b in enumerate(blobs):
                     if b.data.dtype == np.uint8:
-                        data = np.float32(b)
+                        data = np.float32(b.data)
                     elif b.data.dtype in [np.float32, np.float64]:
                         data = 255 * b.data
                     else:

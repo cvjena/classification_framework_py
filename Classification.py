@@ -13,7 +13,6 @@ __author__ = 'simon'
 class Classification(object):
     def __init__(self):
         self.pipeline = AlgorithmPipeline()
-        self.pipeline.add_algorithm(ImageReader())
 
     def train(self, dataset):
         out_generator = self.pipeline.train(dataset.blob_generator())

@@ -63,6 +63,7 @@ class Classificator(IAlgorithm.IAlgorithm):
         
         logging.warning('Training the model with feature dim %i, this might take a while'%data.shape[1])
         self.model.fit(data, labels)
+        logging.warning('Finished')
     
         for (d,m) in zip(self.model.decision_function(data),metas):
             b = Blob()

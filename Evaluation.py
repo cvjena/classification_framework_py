@@ -60,16 +60,20 @@ class Evaluation:
         # Test pipeline
         test_output = list(classification.pipeline.compute(pyprind.prog_bar(test_blobs)))
         test_labels = [b.meta.label for b in test_output]
-        test_pred = [id_label_mapping[blob.data[0].argmax()] for blob in test_output]
+        test_pred = np.array([id_label_mapping[(-blob.data[0]).argsort()] for blob in test_output])
+        #test_top_pred = [id_label_mapping[(-blob.data[0]).argsort()] for blob in test_output]
         
         # Compute confusion matrix
         
-        cm = confusion_matrix(test_labels, test_pred)
+        cm = confusion_matrix(test_labels, test_pred[:,0])
         acc = cm.diagonal().sum()/cm.ravel().sum()
         cm = cm / cm.sum(axis=1,keepdims=True)
         mAP = nanmean(cm.diagonal())
+        top5_error = 1 - np.mean(np.sum(np.array(test_labels)[:,None] == test_pred[:,:5],axis=1))
+        
         logging.warning("Accuracy is " + str(acc))
         logging.warning("ARR is " + str(mAP))
+        logging.warning("Top 5 error is " + str(top5_error))
         return (acc,mAP)
 
 
