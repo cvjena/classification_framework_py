@@ -111,5 +111,5 @@ class Dataset(object):
             if len(class_elements)<=absolute_per_class:
                 self.split_assignments[class_elements]=target_value
             else:
-                how_many = max(absolute_per_class,relative_per_class*len(class_elements))
+                how_many = max(absolute_per_class,int(relative_per_class*len(class_elements)))
                 self.split_assignments[permutation(class_elements)[:how_many]]=target_value
