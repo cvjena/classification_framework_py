@@ -51,6 +51,7 @@ class Dataset(object):
                 if re.match(filenamepattern, file):
                     self.imagepaths.append(root + "/" + file)
                     logging.debug("Added "+ self.imagepaths[-1])
+        self.imagepaths = sorted(self.imagepaths)
 
     # extract class name from directory in which the file is in
     def create_labels_from_path(self):
