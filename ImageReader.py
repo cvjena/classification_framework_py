@@ -23,7 +23,7 @@ class ImageReader(IAlgorithm.IAlgorithm):
                 # This is useful for allowing to skip this layer in testing, when you already have the image as nd-array, but
                 # don't want to change the architecture
                 if blob.data.size == 0 and blob.meta.imagepath:
-                    assert os.path.isfile(blob.meta.imagepath), 'Could not open image %s'%blob.meta.imagepath
+                    assert os.path.isfile(blob.meta.imagepath) or os.path.islink(blob.meta.imagepath), 'Could not open image %s'%blob.meta.imagepath
                     if self.mode == 'PIL':
                         blob.data = np.float32(PIL.Image.open(blob.meta.imagepath).convert('RGB')) / 255
                     elif self.mode == 'OpenCV':

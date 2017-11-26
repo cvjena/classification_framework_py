@@ -24,13 +24,13 @@ class Resize(IAlgorithm):
     def _compute(self, blob_generator):
         for blob in blob_generator:
             if self.mode == 'stretch':
-                blob.data = imresize(blob.data,self.target_shape.astype(int), 'bicubic')
+                blob.data = resize(blob.data,self.target_shape,1, mode='constant')
             elif self.mode in ['resize_smaller_side', 'resize_larger_side']:
                 # Determine the smaller scaling ration
                 if self.mode == 'resize_smaller_side':
                     ratio = self.target_shape / np.min(blob.data.shape[:2])
                 if self.mode == 'resize_larger_side':
                     ratio = self.target_shape / np.max(blob.data.shape[:2])
-                new_shape = np.round(blob.data.shape[:2] * ratio).astype(int)
-                blob.data = imresize(blob.data, new_shape, 'bicubic')
+                new_shape = np.round(blob.data.shape[:2] * ratio)
+                blob.data = resize(blob.data, new_shape, 1, mode='constant')
             yield blob
