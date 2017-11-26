@@ -46,7 +46,7 @@ class Dataset(object):
             self.__dict__[target_field].extend(items)
             
     def use_images_in_folder(self, folderpath, filenamepattern=".*\.(jpg|JPEG|jpeg|png)"):
-        for root, subFolders, files in os.walk(folderpath):
+        for root, subFolders, files in os.walk(folderpath, followlinks=True):
             for file in files:
                 if re.match(filenamepattern, file):
                     self.imagepaths.append(root + "/" + file)
