@@ -1,6 +1,6 @@
 import logging
 from scipy.misc import imresize
-#from skimage.transform import resize
+from skimage.transform import resize
 from IAlgorithm import IAlgorithm
 import numpy as np
 
